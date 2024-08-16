@@ -5,15 +5,15 @@ function auth(req, res, next) {
     const token = req.cookies.token;  // Get token from cookies
 
     if (!token) {
-        return res.status(401).json({ message: 'No token, authorization denied' });
+        return res.sendResponse('No token, authorization denied', null, 401);
     }
 
     try {
-        const decoded = jwt.verify(token, 'your_jwt_secret');
+        const decoded = jwt.verify(token, 'jwtsecret');
         req.user = decoded.userId;
         next();
     } catch (error) {
-        res.status(401).json({ message: 'Token is not valid' });
+        next(error)
     }
 }
 

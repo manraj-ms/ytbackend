@@ -13,9 +13,9 @@ exports.addComment = async (req, res) => {
         });
 
         await comment.save();
-        res.status(201).json({ message: 'Comment added successfully', comment });
+        res.sendResponse('Comment added successfully', comment, 201);
     } catch (error) {
-        res.status(500).json({ message: 'Server error', error });
+        next(error)
     }
 };
 
@@ -27,17 +27,17 @@ exports.deleteComment = async (req, res) => {
         const comment = await Comment.findById(commentId);
 
         if (!comment) {
-            return res.status(404).json({ message: 'Comment not found' });
+            return res.sendResponse('Comment not found', null, 404);
         }
 
         if (comment.user.toString() !== req.user) {
-            return res.status(401).json({ message: 'Unauthorized' });
+            return res.sendResponse('Unauthorized', null, 401);
         }
 
         await comment.deleteOne();
-        res.json({ message: 'Comment deleted successfully' });
+        res.sendResponse('Comment deleted successfully', null);
     } catch (error) {
-        res.status(500).json({ message: 'Server error', error });
+        next(error)
     }
 };
 
@@ -47,8 +47,8 @@ exports.getCommentsForVideo = async (req, res) => {
 
     try {
         const comments = await Comment.find({ video: videoId }).populate('user', 'username');
-        res.json(comments);
+        res.sendResponse('Comments retrieved successfully', comments);
     } catch (error) {
-        res.status(500).json({ message: 'Server error', error });
+        next(error)
     }
 };

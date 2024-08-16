@@ -10,7 +10,7 @@ exports.toggleLike = async (req, res) => {
 
         if (existingLike) {
             await existingLike.deleteOne();
-            return res.json({ message: 'Like removed' });
+            return res.sendResponse('Like removed');
         }
 
         const like = new Like({
@@ -19,9 +19,9 @@ exports.toggleLike = async (req, res) => {
         });
 
         await like.save();
-        res.status(201).json({ message: 'Video liked', like });
+        res.sendResponse('Video liked', like, 201);
     } catch (error) {
-        res.status(500).json({ message: 'Server error', error });
+        next(error)
     }
 };
 
@@ -30,8 +30,8 @@ exports.getLikedVideos = async (req, res) => {
     try {
         const likes = await Like.find({ user: req.user }).populate('video');
         const likedVideos = likes.map(like => like.video);
-        res.json(likedVideos);
+        res.sendResponse('Liked videos retrieved successfully', likedVideos);
     } catch (error) {
-        res.status(500).json({ message: 'Server error', error });
+        next(error)
     }
 };

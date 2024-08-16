@@ -13,9 +13,9 @@ exports.addVideo = async (req, res) => {
         });
 
         await video.save();
-        res.status(201).json({ message: 'Video added successfully', video });
+        res.sendResponse('Video added successfully', video, 201);
     } catch (error) {
-        res.status(500).json({ message: 'Server error', error });
+        next(error)
     }
 };
 
@@ -25,17 +25,17 @@ exports.deleteVideo = async (req, res) => {
         const video = await Video.findById(req.params.videoId);
 
         if (!video) {
-            return res.status(404).json({ message: 'Video not found' });
+            return res.sendResponse('Video not found', null, 404);
         }
 
         if (video.user.toString() !== req.user) {
-            return res.status(401).json({ message: 'Unauthorized' });
+            return res.sendResponse('Unauthorized', null, 401);
         }
 
         await video.deleteOne();
-        res.json({ message: 'Video deleted successfully' });
+        res.sendResponse('Video deleted successfully');
     } catch (error) {
-        res.status(500).json({ message: 'Server error', error });
+        next(error)
     }
 };
 
@@ -45,10 +45,10 @@ exports.getVideoById = async (req, res) => {
         const video = await Video.findById(req.params.videoId).populate({path: 'user',
             select: 'username'});
         if (!video) {
-            return res.status(404).json({ message: 'Video not found' });
+            return res.sendResponse('Video not found', null, 404);
         }
         res.json(video);
     } catch (error) {
-        res.status(500).json({ message: 'Server error', error });
+        next(error)
     }
 };

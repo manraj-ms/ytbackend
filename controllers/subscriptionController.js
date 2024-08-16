@@ -12,7 +12,7 @@ exports.toggleSubscription = async (req, res) => {
 
         if (existingSubscription) {
             await existingSubscription.deleteOne();
-            return res.json({ message: 'Subscription removed' });
+            return res.sendResponse('Subscription removed');
         }
 
         const subscription = new Subscription({
@@ -21,9 +21,9 @@ exports.toggleSubscription = async (req, res) => {
         });
 
         await subscription.save();
-        res.status(201).json({ message: 'Subscribed successfully', subscription });
+        res.sendResponse('Subscribed successfully', subscription, 201);
     } catch (error) {
-        res.status(500).json({ message: 'Server error', error });
+        next(error)
     }
 };
 
@@ -32,8 +32,8 @@ exports.getSubscribedUsers = async (req, res) => {
     try {
         const subscriptions = await Subscription.find({ subscriber: req.user }).populate('subscribedTo', 'username');
         const subscribedUsers = subscriptions.map(sub => sub.subscribedTo);
-        res.json(subscribedUsers);
+        res.sendResponse('Subscribed users retrieved successfully', subscribedUsers);
     } catch (error) {
-        res.status(500).json({ message: 'Server error', error });
+        next(error)
     }
 };

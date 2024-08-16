@@ -2,6 +2,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const errorHandler = require('./middleware/errorHandler');
+const sendResponse = require('./middleware/sendResponse');
 
 const userRoutes = require('./routes/userRoutes');
 const videoRoutes = require('./routes/videoRoutes');
@@ -10,6 +12,9 @@ const likeRoutes = require('./routes/likeRoutes');
 const subscriptionRoutes = require('./routes/subscriptionRoutes');
 
 const app = express();
+
+app.use(sendResponse); 
+
 
 app.use(bodyParser.json());
 app.use(cookieParser()); 
@@ -20,6 +25,8 @@ app.use('/api/videos', videoRoutes);
 app.use('/api/comments', commentRoutes);
 app.use('/api/likes', likeRoutes);
 app.use('/api/subscriptions', subscriptionRoutes);
+
+app.use(errorHandler);
 
 // Connect to MongoDB
 mongoose.connect('mongodb://127.0.0.1:27017/ytbackend')
